@@ -1,6 +1,8 @@
 #ifndef DNSHEADER_H
 #define DNSHEADER_H
 
+#include <string>
+
 #pragma pack (1)
 
 struct DNSHeader{
@@ -15,7 +17,7 @@ struct DNSHeader{
 typedef struct DNSHeader DNSHeader;
 
 struct QuestionField{
-    char *name;
+    std::string name;
     unsigned short type_;
     unsigned short class_;
 };
@@ -23,12 +25,12 @@ struct QuestionField{
 typedef struct QuestionField QuestionField;
 
 struct ResourceRecord{
-    char *name;
+    std::string name;
     unsigned short type_;
     unsigned short class_;
     unsigned int ttl;
     unsigned short data_len;
-    char *data;
+    std::string data;
 };
 typedef struct ResourceRecord ResourceRecord;
 

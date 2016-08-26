@@ -1,6 +1,7 @@
 #include "DNSPacketParser.hpp"
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include <arpa/inet.h>
 
 using namespace std;
@@ -13,7 +14,7 @@ DNSPacketParser::DNSPacketParser(const char *pkt, const unsigned int pktlen)
     questions = ntohs(header->questions);
     answerRRs = ntohs(header->answerRRs);
     authorityRRs = ntohs(header->authorityRRs);
-    additionalRRs = ntohs(header->authorityRRs);
+    additionalRRs = ntohs(header->additionalRRs);
 }
 
 void DNSPacketParser::printPacketHeader()
@@ -49,22 +50,24 @@ const char *DNSPacketParser::parseQuestion(const char *begin) {
     unsigned short class_ = ntohs(*(unsigned short *)p);
     p += 2;
 
-    cout << "name: " << buf << endl;
-    cout << "type: " << type_ << endl;
-    cout << "class:" << class_ << endl;
+    QuestionField question;
+    question.name = string(buf);
+    question.type_ = type_;
+    question.class_ = class_;
+    questionFields.push_back(question);
     return p; 
 }
 
-const char *DNSPacketParser::parseResourceRecord(const char *begin)
+const char *DNSPacketParser::parseResourceRecord(const char *begin, int rrtype)
 {
     char *name, *rr_data;
     const char *p = begin;
     int data_offset;
+    ResourceRecord rr;
 
     name = parseData(begin, &data_offset);
 
-    cout << "name: " << name << endl;
-    cout << data_offset << endl;
+    rr.name = string(name);
     free(name);
     p += data_offset;
     
@@ -77,28 +80,40 @@ const char *DNSPacketParser::parseResourceRecord(const char *begin)
     unsigned short rr_len = ntohs(*(unsigned short *)p);
     p += 2;
 
-    cout << "type: " << type_ << endl;
-    cout << "class: " << class_ << endl;
-    cout << "ttl: " << ttl << endl;
-    cout << "rr_len: " << rr_len << endl;
+    rr.type_ = type_;
+    rr.class_ = class_;
+    rr.ttl = ttl;
+    rr.data_len = rr_len;
+
     if(type_ == 1 && class_ == 1){
         // A 记录
         struct in_addr addr = *(struct in_addr *)p;
-        cout << "addr: " << inet_ntoa(addr) << endl;
+        rr.data = string(inet_ntoa(addr));
     }
     else if(type_ == 28 && class_ == 1){
         // AAAA IPv6记录
         char ipstr[40];
         inet_ntop(AF_INET6, p, ipstr, 40);
-        cout << "addr: " << ipstr << endl;
+        rr.data = string(ipstr);
     }
     else {
         rr_data = parseData(p, &data_offset);
-        cout << rr_data << endl;
-        //cout << data_offset << endl;
+        rr.data = string(rr_data);
         free(rr_data);
     }
     p += rr_len;
+
+    switch (rrtype) {
+        case 1:
+            answerFields.push_back(rr);
+            break;
+        case 2:
+            authorityFields.push_back(rr);
+            break;
+        default:
+            additionalFields.push_back(rr); 
+    }
+
     return p;
 }
 
@@ -147,27 +162,58 @@ void DNSPacketParser::parse()
     const char *pos = body;
 
     printPacketHeader();
-    cout << "+++++++++++" << endl;
     for(i=0; i<questions; i++){ 
         pos = parseQuestion(pos);
-        cout << "----------" << endl;
     }
-    cout << "+++++++++++" << endl;
     for (i=0; i<answerRRs; i++){
-        pos = parseResourceRecord(pos);
-        cout << "-----------" << endl;
+        pos = parseResourceRecord(pos, 1);
     }
 
-    cout << "+++++++++++" << endl;
     for (i=0; i<authorityRRs; i++){
-        pos = parseResourceRecord(pos);
-        cout << "------------" << endl;
+        pos = parseResourceRecord(pos, 2);
     }
 
-    cout << "+++++++++++" << endl;
     for (i=0; i<additionalRRs; i++){
-        pos = parseResourceRecord(pos);
-        cout << "------------" << endl;
+        pos = parseResourceRecord(pos, 3);
+    }
+
+    //打印
+    cout << "==>Question field<==\n" << endl;
+    for(vector<QuestionField>::iterator it = questionFields.begin(); it != questionFields.end(); ++it){
+        cout << it->name << endl;
+        cout << it->type_ << endl;
+        cout << it->class_ << endl;
+        cout << endl;
+    }
+    cout << "==>Answer fields<==\n" << endl;
+    for(vector<ResourceRecord>::iterator it = answerFields.begin(); it != answerFields.end(); ++it){
+        cout << it->name << endl;
+        cout << it->type_ << endl;
+        cout << it->class_ << endl;
+        cout << it->ttl << endl;
+        cout << it->data_len << endl;
+        cout << it->data << endl;
+        cout << endl;
+    }
+    cout << "==>Authority fields<==\n" << endl;
+    for(vector<ResourceRecord>::iterator it = authorityFields.begin(); it != authorityFields.end(); ++it){
+        cout << it->name << endl;
+        cout << it->type_ << endl;
+        cout << it->class_ << endl;
+        cout << it->ttl << endl;
+        cout << it->data_len << endl;
+        cout << it->data << endl;
+        cout << endl;
+    }
+    cout << "==>additional fields<==\n" << endl;
+    for(vector<ResourceRecord>::iterator it = additionalFields.begin(); it != additionalFields.end(); ++it){
+        cout << it->name << endl;
+        cout << it->type_ << endl;
+        cout << it->class_ << endl;
+        cout << it->ttl << endl;
+        cout << it->data_len << endl;
+        cout << it->data << endl;
+        cout << endl;
     }
 }
 
