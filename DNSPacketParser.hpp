@@ -7,13 +7,15 @@
 
 class DNSPacketParser{
 public:
-    DNSPacketParser(const char *pkt, const unsigned int pktlen);
+    DNSPacketParser(){};
+    DNSPacketParser(const char *pkt, unsigned int pktlen) : pkt(pkt), pktlen(pktlen){ setDNSHeader(); };
     ~DNSPacketParser(){};
     void parse();
+    void parse(const char *pkt, unsigned int pktlen);
     
 private:
     const char *pkt;
-    const unsigned int pktlen;
+    unsigned int pktlen;
     const DNSHeader *header;
     const char *body;
     int questions;
@@ -25,6 +27,8 @@ private:
     std::vector<ResourceRecord> authorityFields;
     std::vector<ResourceRecord> additionalFields;
 
+    void clear();
+    void setDNSHeader();
     void printPacketHeader();
     void printFields();
     const char *parseQuestion(const char *begin);

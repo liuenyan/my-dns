@@ -6,8 +6,7 @@
 
 using namespace std;
 
-DNSPacketParser::DNSPacketParser(const char *pkt, const unsigned int pktlen)
-    : pkt(pkt), pktlen(pktlen)
+void DNSPacketParser::setDNSHeader()
 {
     header = (const DNSHeader *) pkt;
     body = (char *)header + sizeof(DNSHeader);
@@ -180,6 +179,15 @@ void DNSPacketParser::parse()
 
 }
 
+void DNSPacketParser::parse(const char *pkt, unsigned int pktlen)
+{
+    clear();
+    this->pkt = pkt;
+    this->pktlen = pktlen;
+    setDNSHeader();
+    parse();
+}
+
 void DNSPacketParser::printFields()
 {
     cout << "==>Question field<==" << endl;
@@ -201,3 +209,16 @@ void DNSPacketParser::printVector(const std::vector<T> &v)
     }
 }
 
+void DNSPacketParser::clear()
+{
+    pkt = nullptr;
+    pktlen = 0;
+    questions = 0;
+    answerRRs = 0;
+    authorityRRs = 0;
+    additionalRRs = 0;
+    questionFields.clear();
+    answerFields.clear();
+    authorityFields.clear();
+    additionalFields.clear();
+}

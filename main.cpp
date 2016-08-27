@@ -17,6 +17,8 @@ int main(int argc, char *argv[]){
     char *recvdata = sender->sendDNSQuery(argv[1], recvlen);
     DNSPacketParser *parser = new DNSPacketParser(recvdata, recvlen);
     parser->parse();
+    //DNSPacketParser *parser = new DNSPacketParser();
+    //parser->parse(recvdata, recvlen);
     free(recvdata);
     delete parser;
     delete sender;
