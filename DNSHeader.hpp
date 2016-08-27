@@ -1,5 +1,5 @@
-#ifndef DNSHEADER_H
-#define DNSHEADER_H
+#ifndef DNSHEADER_HPP
+#define DNSHEADER_HPP
 
 #include <string>
 

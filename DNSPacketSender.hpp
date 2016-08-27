@@ -1,5 +1,5 @@
-#ifndef DNSPACKETSENDER_H
-#define DNSPACKETSENDER_H
+#ifndef DNSPACKETSENDER_HPP
+#define DNSPACKETSENDER_HPP
 
 #include <arpa/inet.h>
 
