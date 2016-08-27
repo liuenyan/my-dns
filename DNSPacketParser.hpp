@@ -1,7 +1,7 @@
 #ifndef DNSPACKETPARSER_HPP
 #define DNSPACKETPARSER_HPP
 
-#include "DNSHeader.h"
+#include "DNSHeader.hpp"
 #include <arpa/inet.h>
 #include <vector>
 
