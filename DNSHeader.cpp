@@ -9,7 +9,7 @@ ostream & operator<<(ostream &os, const QuestionField &q)
 }
 
 
-std::ostream & operator<<(std::ostream &os, const ResourceRecord &r)
+ostream & operator<<(ostream &os, const ResourceRecord &r)
 {
     return os << r.name << "\t" << r.type_ << "\t" << r.data; 
 }
