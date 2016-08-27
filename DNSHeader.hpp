@@ -29,6 +29,6 @@ struct ResourceRecord{
     unsigned short data_len;
     std::string data;
 };
-std::ostream & operator<<(std::ostream &os, const ResourceRecord &q);
+std::ostream & operator<<(std::ostream &os, const ResourceRecord &r);
 
 #endif

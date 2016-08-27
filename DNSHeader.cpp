@@ -3,7 +3,7 @@
 
 using namespace std;
 
-ostream & operator<<(ostream &os, const struct QuestionField &q)
+ostream & operator<<(ostream &os, const QuestionField &q)
 {
     return os << q.name << "\t" << q.type_ << "\t" << q.class_;
 }
