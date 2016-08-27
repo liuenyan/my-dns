@@ -26,12 +26,13 @@ private:
     std::vector<ResourceRecord> additionalFields;
 
     void printPacketHeader();
+    void printFields();
     const char *parseQuestion(const char *begin);
     const char *parseResourceRecord(const char *begin, int rrtype);
     bool isptr(unsigned char chr){ return (chr & 0xc0) == 0xc0;};
     unsigned short ptrOffset(unsigned short a){ return (a & 0x3fff); };
     char *parseData(const char *begin, int *data_offset);
- 
+    template <typename T> void printVector(const std::vector<T> &v);
 };
 
 #endif

@@ -161,7 +161,7 @@ void DNSPacketParser::parse()
     int i;
     const char *pos = body;
 
-    printPacketHeader();
+    //printPacketHeader();
     for(i=0; i<questions; i++){ 
         pos = parseQuestion(pos);
     }
@@ -176,44 +176,28 @@ void DNSPacketParser::parse()
     for (i=0; i<additionalRRs; i++){
         pos = parseResourceRecord(pos, 3);
     }
+    printFields();
 
-    //打印
-    cout << "==>Question field<==\n" << endl;
-    for(vector<QuestionField>::iterator it = questionFields.begin(); it != questionFields.end(); ++it){
-        cout << it->name << endl;
-        cout << it->type_ << endl;
-        cout << it->class_ << endl;
-        cout << endl;
-    }
-    cout << "==>Answer fields<==\n" << endl;
-    for(vector<ResourceRecord>::iterator it = answerFields.begin(); it != answerFields.end(); ++it){
-        cout << it->name << endl;
-        cout << it->type_ << endl;
-        cout << it->class_ << endl;
-        cout << it->ttl << endl;
-        cout << it->data_len << endl;
-        cout << it->data << endl;
-        cout << endl;
-    }
-    cout << "==>Authority fields<==\n" << endl;
-    for(vector<ResourceRecord>::iterator it = authorityFields.begin(); it != authorityFields.end(); ++it){
-        cout << it->name << endl;
-        cout << it->type_ << endl;
-        cout << it->class_ << endl;
-        cout << it->ttl << endl;
-        cout << it->data_len << endl;
-        cout << it->data << endl;
-        cout << endl;
-    }
-    cout << "==>additional fields<==\n" << endl;
-    for(vector<ResourceRecord>::iterator it = additionalFields.begin(); it != additionalFields.end(); ++it){
-        cout << it->name << endl;
-        cout << it->type_ << endl;
-        cout << it->class_ << endl;
-        cout << it->ttl << endl;
-        cout << it->data_len << endl;
-        cout << it->data << endl;
-        cout << endl;
+}
+
+void DNSPacketParser::printFields()
+{
+    cout << "==>Question field<==" << endl;
+    printVector(questionFields);
+    cout << "==>Answer fields<==" << endl;
+    printVector(answerFields);
+    cout << "==>Authority fields<==" << endl; 
+    printVector(authorityFields);
+    cout << "==>additional fields<==" << endl; 
+    printVector(additionalFields);
+   
+}
+
+template <typename T>
+void DNSPacketParser::printVector(const std::vector<T> &v)
+{
+    for(typename vector<T>::const_iterator it = v.begin(); it != v.end(); ++it){
+        cout << *it << endl;
     }
 }
 

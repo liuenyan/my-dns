@@ -14,15 +14,12 @@ struct DNSHeader{
     unsigned short additionalRRs;
 };
 
-typedef struct DNSHeader DNSHeader;
-
 struct QuestionField{
     std::string name;
     unsigned short type_;
     unsigned short class_;
 };
-
-typedef struct QuestionField QuestionField;
+std::ostream & operator<<(std::ostream &os, const QuestionField &q);
 
 struct ResourceRecord{
     std::string name;
@@ -32,6 +29,6 @@ struct ResourceRecord{
     unsigned short data_len;
     std::string data;
 };
-typedef struct ResourceRecord ResourceRecord;
+std::ostream & operator<<(std::ostream &os, const ResourceRecord &q);
 
 #endif
